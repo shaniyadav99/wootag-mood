@@ -4,6 +4,8 @@ A dynamic web application that recommends Prime Video movies based on user's moo
 
 ![Prime Video Mood Detection](https://m.media-amazon.com/images/S/pv-target-images/af13e1c59556eb143d2b213c9f95567677f409033d4c9619c553367d71bee982._SX1920_FMwebp_.jpg)
 
+🔗 **[Live Demo](https://wootag-mood.vercel.app/)**
+
 ## Features
 
 - 📸 Real-time facial expression capture using device camera
@@ -30,17 +32,20 @@ A dynamic web application that recommends Prime Video movies based on user's moo
 ## How It Works
 
 1. **Initial Screen**
+
    - Users are presented with two options:
      - Scan mood using camera
      - Manual mood selection
 
 2. **Camera-Based Mood Detection**
+
    - Requests camera access
    - Captures user's facial expression
    - Analyzes expression to determine mood
    - Shows scanning animation during analysis
 
 3. **Manual Mood Selection**
+
    - Users can choose from five moods:
      - Happy 😊
      - Excited 🤩
@@ -64,6 +69,7 @@ A dynamic web application that recommends Prime Video movies based on user's moo
 ## Setup and Usage
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/shaniyadav99/wootag-mood.git
    ```
@@ -75,16 +81,19 @@ A dynamic web application that recommends Prime Video movies based on user's moo
 ## Technical Details
 
 ### Camera Integration
+
 - Uses `navigator.mediaDevices.getUserMedia` for camera access
 - Implements error handling for denied camera access
 - Provides fallback to manual selection
 
 ### Animation System
+
 - GSAP Timeline for scanning animation
 - CSS keyframes for loading spinner
 - Smooth transitions between steps
 
 ### Error Handling
+
 - Camera access fallback
 - Mood detection error management
 - Default to "Neutral" mood on failures
