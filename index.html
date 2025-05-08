@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood-Based Movie Recommendation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="ad-container">
+        <!-- Step 1: Camera Access Request -->
+        <div class="step active" id="step1">
+            <img class="prime-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" alt="Prime Video Logo">
+            <h1 class="headline">Discover Your Perfect Movie Match!</h1>
+            <p class="subheadline">Let us analyze your mood and recommend the perfect movie for you.</p>
+            <button class="btn" id="cameraAccessBtn">Scan My Mood</button>
+            <p class="skip-option" id="skipToManualBtn">No Pic? No problem! Choose your mood</p>
+        </div>
+
+        <!-- Step 2: Video Capture -->
+        <div class="step" id="step2">
+            <img class="prime-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" alt="Prime Video Logo">
+            <h1 class="headline">Let's See How You're Feeling</h1>
+            <div class="video-container">
+                <video id="video" autoplay playsinline muted></video>
+                <div class="scan-animation" id="scanAnimation"></div>
+            </div>
+            <p class="error-message" id="errorMessage">Camera access denied. Please try manual selection.</p>
+            <button class="btn" id="checkMoodBtn">Check My Mood</button>
+            <p class="skip-option" id="skipToManualBtn2">Choose mood manually instead</p>
+        </div>
+
+        <!-- Step 3: Scanning Animation -->
+        <div class="step" id="step3">
+            <img class="prime-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" alt="Prime Video Logo">
+            <h1 class="headline">Analyzing Your Mood</h1>
+            <div class="video-container">
+                <video id="videoSnapshot" playsinline muted></video>
+                <div class="scan-animation" id="scanAnimation2"></div>
+            </div>
+            <p class="subheadline">Please wait while we analyze your expression...</p>
+        </div>
+
+        <!-- Step 4: Manual Mood Selection -->
+        <div class="step" id="step4">
+            <img class="prime-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" alt="Prime Video Logo">
+            <h1 class="headline">How Are You Feeling Today?</h1>
+            <div class="mood-selection">
+                <div class="mood-btn" data-mood="Happy">😊 Happy</div>
+                <div class="mood-btn" data-mood="Excited">🤩 Excited</div>
+                <div class="mood-btn" data-mood="Neutral">😐 Neutral</div>
+                <div class="mood-btn" data-mood="Sad">😢 Sad</div>
+                <div class="mood-btn" data-mood="Angry">😠 Angry</div>
+            </div>
+            <button class="btn" id="confirmMoodBtn" disabled>This is my mood</button>
+        </div>
+
+        <!-- Step 5: Movie Recommendation -->
+        <div class="step" id="step5">
+            <img class="prime-logo" src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" alt="Prime Video Logo">
+            <div class="movie-recommendation">
+                <p class="detected-mood">Based on your <span id="moodText">mood</span>, we recommend:</p>
+                <img class="movie-thumbnail" id="movieThumbnail" src="" alt="Movie Thumbnail">
+                <p class="movie-name" id="movieName">Movie Title</p>
+                <div class="action-buttons">
+                    <button class="btn" id="watchNowBtn">Watch Now</button>
+                    <p class="skip-option" id="scanAgainBtn">Scan Again</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-spinner"></div>
+            <p class="subheadline">Processing your mood...</p>
+        </div>
+    </div>
+
+    <script src="script.js"> </script>
+</body>
+</html>
