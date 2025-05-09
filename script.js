@@ -26,9 +26,10 @@ const movieOptions = {
     }
 };
 
-// Wait for DOM to be fully loaded
+// Gemini API Key
+const GEMINI_API_KEY = 'AIzaSyDk1EqWBvVH3DH4zDB5CYeLZo4dQrmqQ4g';
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Get all step elements
     const steps = {
         step1: document.getElementById('step1'),
         step2: document.getElementById('step2'),
@@ -37,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
         step5: document.getElementById('step5')
     };
 
-    // Get interactive elements
     const elements = {
         video: document.getElementById('video'),
         videoSnapshot: document.getElementById('videoSnapshot'),
@@ -58,14 +58,11 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen: document.getElementById('loadingScreen')
     };
 
-    // State variables
     let videoStream = null;
     let selectedMood = null;
     let movieLink = '';
 
-    // Function to show a specific step and hide others
     function showStep(stepId) {
-        // Hide all steps first
         Object.keys(steps).forEach(step => {
             if (step === stepId) {
                 steps[step].classList.add('active');
@@ -75,10 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialize camera
     async function initCamera() {
         try {
-            // Hide loading screen first in case it's showing
             elements.loadingScreen.style.display = 'none';
             elements.errorMessage.style.display = 'none';
             
@@ -92,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             elements.video.srcObject = videoStream;
             
-            // Wait for video to be ready
             elements.video.onloadedmetadata = function() {
                 elements.video.play().catch(err => console.error('Error playing video:', err));
                 showStep('step2');
@@ -107,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Capture image from video
     function captureImage() {
         if (!elements.video.videoWidth) {
             throw new Error('Video not ready yet');
@@ -118,64 +111,77 @@ document.addEventListener('DOMContentLoaded', function() {
         canvas.height = elements.video.videoHeight;
         const ctx = canvas.getContext('2d');
         
-        // Flip horizontally to correct mirror effect
         ctx.translate(canvas.width, 0);
         ctx.scale(-1, 1);
-        
         ctx.drawImage(elements.video, 0, 0, canvas.width, canvas.height);
         
-        // Create a clone of the video for display in step 3
         elements.videoSnapshot.srcObject = videoStream;
         elements.videoSnapshot.play().catch(err => console.error('Error playing video snapshot:', err));
         
         return canvas.toDataURL('image/jpeg');
     }
 
-    // Analyze mood using OpenAI API
-    async function analyzeMood(imageDataUrl) {
+    async function analyzeMoodWithGemini(imageDataUrl) {
         showStep('step3');
-        
-        // Start scan animation
         startScanAnimation(elements.scanAnimation2);
         
         try {
-            // For demonstration purposes, we'll use the simulateMoodDetection
-            // since we don't have a valid OpenAI API key
-            console.log('Using simulated mood detection instead of OpenAI API');
-            const mood = await simulateMoodDetection();
-            return mood;
+            // Extract base64 data from data URL
+            const base64Data = imageDataUrl.split(',')[1];
             
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: "Analyze this image of a person's face and determine their mood. Only respond with one of these exact words: Happy, Sad, Excited, Neutral, Angry. Look for facial expressions like smiling (Happy), frowning (Sad), wide eyes (Excited), neutral expression (Neutral), or tense face (Angry)." },
+                            {
+                                inline_data: {
+                                    mime_type: "image/jpeg",
+                                    data: base64Data
+                                }
+                            }
+                        ]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'Failed to analyze mood');
+            }
+            
+            // Extract the mood from Gemini's response
+            const responseText = data.candidates[0].content.parts[0].text;
+            const moodMatch = responseText.match(/(Happy|Sad|Excited|Neutral|Angry)/i);
+            
+            if (moodMatch) {
+                return moodMatch[0].charAt(0).toUpperCase() + moodMatch[0].slice(1).toLowerCase();
+            } else {
+                return 'Neutral'; // Default if no clear mood detected
+            }
         } catch (error) {
-            console.error('Error analyzing mood:', error);
-            return 'Neutral'; // Default to neutral on error
+            console.error('Error analyzing mood with Gemini:', error);
+            return 'Neutral'; // Fallback to neutral
         }
     }
 
-    // Function to simulate OpenAI API call for testing
-    async function simulateMoodDetection() {
-        // For testing without actual API call
-        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
-        const moods = ['Happy', 'Excited', 'Neutral', 'Angry', 'Sad'];
-        return moods[Math.floor(Math.random() * moods.length)];
-    }
-
-    // Go to manual selection
     function goToManualSelection() {
-        // Stop camera stream if it exists
         if (videoStream) {
             videoStream.getTracks().forEach(track => track.stop());
             videoStream = null;
         }
         
         showStep('step4');
-        
-        // Reset selected mood
         selectedMood = null;
         elements.moodButtons.forEach(btn => btn.classList.remove('selected'));
         elements.confirmMoodBtn.disabled = true;
     }
 
-    // Show movie recommendation
     function showMovieRecommendation(mood) {
         const movie = movieOptions[mood] || movieOptions.Neutral;
         
@@ -187,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showStep('step5');
     }
 
-    // Start scanning animation
     function startScanAnimation(element) {
         gsap.set(element, { opacity: 1, y: 0 });
         
@@ -196,42 +201,34 @@ document.addEventListener('DOMContentLoaded', function() {
             .to(element, { y: '0px', duration: 1.5, ease: 'power1.inOut' });
     }
 
-    // Event: Camera access button click
+    // Event Listeners
     elements.cameraAccessBtn.addEventListener('click', initCamera);
     
-    // Event: Check mood button click
     elements.checkMoodBtn.addEventListener('click', async () => {
         try {
             elements.loadingScreen.style.display = 'flex';
             const imageDataUrl = captureImage();
             
-            // For testing, you can use simulateMoodDetection instead
-            // const mood = await simulateMoodDetection();
-            
-            // For actual API use:
-            const mood = await analyzeMood(imageDataUrl);
+            const mood = await analyzeMoodWithGemini(imageDataUrl);
             
             elements.loadingScreen.style.display = 'none';
             selectedMood = mood;
             showMovieRecommendation(mood);
             
-            // Stop the camera stream after detection
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
             }
         } catch (error) {
             console.error('Error processing image:', error);
             elements.loadingScreen.style.display = 'none';
-            selectedMood = 'Neutral'; // Default fallback
+            selectedMood = 'Neutral';
             showMovieRecommendation('Neutral');
         }
     });
     
-    // Event: Skip to manual selection button clicks
     elements.skipToManualBtn.addEventListener('click', goToManualSelection);
     elements.skipToManualBtn2.addEventListener('click', goToManualSelection);
     
-    // Event: Mood button clicks
     elements.moodButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             elements.moodButtons.forEach(b => b.classList.remove('selected'));
@@ -241,24 +238,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Event: Confirm mood button click
     elements.confirmMoodBtn.addEventListener('click', () => {
         if (selectedMood) {
             showMovieRecommendation(selectedMood);
         }
     });
     
-    // Event: Watch now button click
     elements.watchNowBtn.addEventListener('click', () => {
         window.open(movieLink, '_blank');
     });
     
-    // Event: Scan again button click
     elements.scanAgainBtn.addEventListener('click', () => {
         showStep('step1');
     });
 
-    // Handle visibility changes (for when ad is in iframe or tab is not active)
     document.addEventListener('visibilitychange', () => {
         if (document.hidden && videoStream) {
             videoStream.getTracks().forEach(track => track.stop());
