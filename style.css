@@ -1,28 +1,47 @@
+/* Global Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Arial', sans-serif;
+    word-break: break-word;
 }
 
 body {
-    overflow: hidden;
+    overflow-x: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #f0f0f0;
     min-height: 100vh;
+    padding: 20px;
 }
 
 .ad-container {
     position: relative;
-    width: 300px;
-    height: 600px;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    min-height: 600px;
+    aspect-ratio: 1 / 2;
     background: linear-gradient(135deg, #051937, #004d7a, #0077b6);
     overflow: hidden;
     color: white;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Aspect Ratio Fallback */
+.ad-container::before {
+    content: "";
+    float: left;
+    padding-top: 200%;
+}
+
+.ad-container::after {
+    content: "";
+    display: block;
+    clear: both;
 }
 
 .step {
@@ -35,7 +54,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px;
+    padding: calc(20px * min(1, 100vw/300));
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -46,15 +65,17 @@ body {
 }
 
 .prime-logo {
-    width: 120px;
-    margin: 15px auto;
+    width: 40%;
+    max-width: 120px;
+    margin: 4% auto;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    animation: shimmer 3s infinite;
 }
 
 .headline {
-    margin: 10px 0;
-    font-size: 20px;
-    padding: 0 15px;
+    margin: 3% 0;
+    font-size: clamp(16px, 6.5vw, 20px);
+    padding: 0 5%;
     font-weight: bold;
     text-align: center;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -62,9 +83,9 @@ body {
 }
 
 .subheadline {
-    font-size: 14px;
-    margin-bottom: 20px;
-    padding: 0 10px;
+    font-size: clamp(12px, 4.7vw, 14px);
+    margin-bottom: 5%;
+    padding: 0 3%;
     text-align: center;
     line-height: 1.4;
     opacity: 0.9;
@@ -72,32 +93,30 @@ body {
 
 .video-container {
     position: relative;
-    width: 240px;
-    height: 180px;
+    width: 80%;
+    max-width: 240px;
+    aspect-ratio: 4/3;
     background-color: #000;
     border-radius: 12px;
     overflow: hidden;
-    margin: 15px auto;
+    margin: 4% auto;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-#video, #videoSnapshot {
+#video,
+#videoSnapshot {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1); /* Mirror effect */
+    transform: scaleX(-1);
 }
 
 .scan-animation {
     position: absolute;
     width: 90%;
     height: 4px;
-    background: linear-gradient(to right, 
-        rgba(0, 255, 255, 0.2), 
-        rgba(0, 255, 255, 0.8) 50%, 
-        rgba(0, 255, 255, 0.2)
-    );
+    background: linear-gradient(to right, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.8) 50%, rgba(0, 255, 255, 0.2));
     top: 0;
     left: 5%;
     border-radius: 4px;
@@ -109,15 +128,16 @@ body {
     background-color: #00a8e1;
     color: white;
     border: none;
-    padding: 12px 25px;
+    padding: clamp(10px, 4vw, 12px) clamp(15px, 8vw, 25px);
     border-radius: 25px;
-    font-size: 16px;
+    font-size: clamp(14px, 5vw, 16px);
     cursor: pointer;
-    margin: 15px 0;
+    margin: 4% 0;
     font-weight: bold;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    min-width: 180px;
+    min-width: 60%;
+    max-width: 180px;
     text-align: center;
 }
 
@@ -141,8 +161,8 @@ body {
 }
 
 .skip-option {
-    margin-top: 15px;
-    font-size: 14px;
+    margin-top: 4%;
+    font-size: clamp(12px, 4.7vw, 14px);
     text-decoration: underline;
     cursor: pointer;
     color: #00a8e1;
@@ -158,13 +178,13 @@ body {
     flex-direction: column;
     align-items: center;
     width: 90%;
-    margin: 10px 0;
+    margin: 3% 0;
 }
 
 .mood-btn {
     background-color: rgba(255, 255, 255, 0.1);
-    margin: 6px 0;
-    padding: 12px;
+    margin: 2% 0;
+    padding: 3.5%;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     width: 85%;
@@ -172,6 +192,7 @@ body {
     transition: all 0.2s ease;
     text-align: center;
     font-weight: 500;
+    font-size: clamp(12px, 4.7vw, 14px);
 }
 
 .mood-btn:hover {
@@ -191,21 +212,22 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    padding: 10px;
+    padding: 3%;
 }
 
 .detected-mood {
-    font-size: 18px;
-    margin: 5px 0 10px;
+    font-size: clamp(16px, 6vw, 18px);
+    margin: 1.5% 0 3%;
     text-align: center;
 }
 
 .movie-thumbnail {
-    width: 220px;
-    height: 140px;
+    width: 75%;
+    max-width: 220px;
+    aspect-ratio: 11/7;
     object-fit: cover;
     border-radius: 10px;
-    margin: 10px 0;
+    margin: 3% 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border: 2px solid rgba(255, 255, 255, 0.3);
     transition: transform 0.3s ease;
@@ -216,9 +238,9 @@ body {
 }
 
 .movie-name {
-    font-size: 22px;
+    font-size: clamp(18px, 7vw, 22px);
     font-weight: bold;
-    margin: 12px 0;
+    margin: 3% 0;
     text-align: center;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
@@ -228,7 +250,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: 4%;
     width: 100%;
 }
 
@@ -264,31 +286,13 @@ body {
 .error-message {
     display: none;
     color: #ff6b6b;
-    font-size: 14px;
-    margin: 8px 0;
-    padding: 0 15px;
+    font-size: clamp(12px, 4.7vw, 14px);
+    margin: 2.5% 0;
+    padding: 0 5%;
     text-align: center;
     background-color: rgba(255, 107, 107, 0.1);
     border-radius: 5px;
-    padding: 8px;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+    padding: 2.5%;
 }
 
 .fade-in {
@@ -299,13 +303,35 @@ body {
     animation: fadeOut 0.5s ease-in-out forwards;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(0, 168, 225, 0.6);
     }
+
     70% {
         box-shadow: 0 0 0 10px rgba(0, 168, 225, 0);
     }
+
     100% {
         box-shadow: 0 0 0 0 rgba(0, 168, 225, 0);
     }
@@ -319,14 +345,92 @@ body {
     0% {
         filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
     }
+
     50% {
         filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
     }
+
     100% {
         filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
     }
 }
 
-.prime-logo {
-    animation: shimmer 3s infinite;
+/* Responsive Tweaks */
+@media (min-width: 768px) {
+    .ad-container {
+        max-width: 300px;
+    }
+}
+
+@media (min-height: 700px) and (min-width: 350px) {
+    .headline {
+        font-size: 20px;
+    }
+
+    .subheadline {
+        font-size: 14px;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 320px) {
+    body {
+        padding: 10px;
+    }
+
+    .ad-container {
+        max-width: 280px;
+    }
+
+    .video-container {
+        width: 85%;
+    }
+
+    .mood-btn {
+        width: 90%;
+    }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+    .ad-container {
+        height: 90vh;
+        aspect-ratio: auto;
+    }
+}
+
+@media (max-height: 450px) and (orientation: landscape) {
+    .ad-container {
+        max-width: 400px;
+        aspect-ratio: 2 / 1;
+    }
+
+    .step {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .headline,
+    .subheadline {
+        width: 100%;
+        text-align: center;
+        margin: 1% 0;
+    }
+
+    .video-container {
+        margin: 1% auto;
+        max-width: 45%;
+    }
+
+    .movie-thumbnail {
+        max-width: 45%;
+    }
+
+    .action-buttons {
+        width: 45%;
+    }
 }

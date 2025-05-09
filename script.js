@@ -129,7 +129,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Extract base64 data from data URL
             const base64Data = imageDataUrl.split(',')[1];
             
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`, {
+            // Update to use gemini-1.5-flash model instead of deprecated gemini-pro-vision
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const data = await response.json();
+            console.log(data);
             
             if (!response.ok) {
                 throw new Error(data.error?.message || 'Failed to analyze mood');
